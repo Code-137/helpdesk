@@ -43,9 +43,8 @@
                 <button
                     name="create_new_ticket"
                     type="action"
-                    class="btn btn-primary"
-                    groups="base.group_portal"
-                    style="float: right; margin-right: 0px; margin-top:5px;"
+                    class="btn btn-primary mb8"
+                    style="float: left; margin-right: 0px; margin-top:5px;"
                 >New Ticket</button>
             </form>
         </xpath>
@@ -55,15 +54,14 @@
             <t t-set="breadcrumbs_searchbar" t-value="True" />
             <form method="POST" t-attf-action="/new/ticket">
                 <h3>Tickets
-            <t t-call="portal.portal_searchbar" />
-            <button
+                    <t t-call="portal.portal_searchbar" />
+                    <button
                         name="create_new_ticket"
                         type="action"
-                        class="btn btn-primary"
-                        groups="base.group_portal"
-                        style="float: right; margin-right: 5px;"
+                        class="btn btn-primary mb8"
+                        style="float: left; margin-right: 5px;"
                     >New Ticket</button>
-          </h3>
+                </h3>
                 <input
                     type="hidden"
                     name="csrf_token"
@@ -75,7 +73,7 @@
             </t>
             <div t-if="tickets" class="panel panel-default">
                 <div class="table-responsive">
-                    <table class="table table-hover o_portal_my_doc_table">
+                    <table class="table rounded mb-0 bg-white o_portal_my_doc_table">
                         <thead>
                             <tr class="active">
                                 <th>By</th>
@@ -125,8 +123,8 @@
     <template id="portal_helpdesk_ticket_page" name="Ticket Portal Template">
         <t t-call="portal.portal_layout">
             <div class="container">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card mt16 mb32">
+                    <div class="card-header bg-white">
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>
@@ -161,7 +159,7 @@
                             </t>
                         </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="mb8">
                             <div>
                                 <div class="pull-left">
@@ -187,139 +185,164 @@
                             <t t-raw="ticket.description" />
                             <br />
                         </div>
-                        <h4 class="page-header">History</h4>
-                        <!-- Options:Ticket Chatter: user can reply -->
-                        <t t-call="portal.message_thread">
-                            <t t-set="object" t-value="ticket" />
-                        </t>
                     </div>
                 </div>
+                <h4 class="page-header">History</h4>
+                <!-- Options:Ticket Chatter: user can reply -->
+                <t t-call="portal.message_thread">
+                    <t t-set="object" t-value="ticket" />
+                </t>
             </div>
             <div class="oe_structure mb32" />
         </t>
     </template>
     <template id="portal_create_ticket" name="Create Ticket">
         <t t-call="portal.portal_layout">
-            <div class="container">
+            <div class="card p-1 mt16">
                 <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="text-center">Send a new ticket</h1>
-                    </div>
-                </div>
-            </div>
-            <form
-                action="/submitted/ticket"
-                method="POST"
-                class="form-horizontal mt32"
-                enctype="multipart/form-data"
-            >
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    t-att-value="request.csrf_token()"
-                />
-                <div class="form-group">
-                    <label
-                        class="col-md-3 col-sm-4 control-label"
-                        for="name"
-                    >Name</label>
-                    <div class="col-md-7 col-sm-8">
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="name"
-                            t-attf-value="#{name}"
-                            required="True"
-                        />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label
-                        class="col-md-3 col-sm-4 control-label"
-                        for="email"
-                    >Email</label>
-                    <div class="col-md-7 col-sm-8">
-                        <input
-                            type="email"
-                            class="form-control"
-                            name="email"
-                            required="True"
-                            t-attf-value="#{email}"
-                            readonly="True"
-                        />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label
-                        class="col-md-3 col-sm-4 control-label"
-                        for="category"
-                    >Category</label>
-                    <div class="col-md-7 col-sm-8">
-                        <select
-                            class="form-control"
-                            id="category"
-                            name="category"
-                            required="True"
+                    <div class="col-md-6">
+                        <form
+                            action="/submitted/ticket"
+                            method="POST"
+                            class="form-horizontal mt16"
+                            enctype="multipart/form-data"
                         >
-                            <t t-foreach="categories" t-as="cat">
-                                <option t-attf-value="#{cat.id}">
-                                    <t t-esc="cat.name" />
-                                </option>
-                            </t>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label
-                        class="col-md-3 col-sm-4 control-label"
-                        for="subject"
-                    >Subject</label>
-                    <div class="col-md-7 col-sm-8">
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="subject"
-                            required="True"
-                        />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label
-                        class="col-md-3 col-sm-4 control-label"
-                        for="attachment"
-                    >Add Attachments</label>
-                    <div class="col-md-7 col-sm-8">
-                        <div class="btn btn-default btn-file col-md-12">
                             <input
-                                class="form-control o_website_form_input"
-                                name="attachment"
-                                id="attachment"
-                                type="file"
-                                multiple="multiple"
+                                type="hidden"
+                                name="csrf_token"
+                                t-att-value="request.csrf_token()"
                             />
+                            <div class="form-group">
+                                <label
+                                    class="col-12 control-label"
+                                    for="name"
+                                >Name</label>
+                                <div class="col-12">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="name"
+                                        t-attf-value="#{name}"
+                                        required="True"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-12 control-label"
+                                    for="email"
+                                >Email</label>
+                                <div class="col-12">
+                                    <input
+                                        type="email"
+                                        class="form-control"
+                                        name="email"
+                                        required="True"
+                                        t-attf-value="#{email}"
+                                        readonly="True"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-12 control-label"
+                                    for="category"
+                                >Category</label>
+                                <div class="col-12">
+                                    <select
+                                        class="form-control"
+                                        id="category"
+                                        name="category"
+                                        required="True"
+                                    >
+                                        <t t-foreach="categories" t-as="cat">
+                                            <option t-attf-value="#{cat.id}">
+                                                <t t-esc="cat.name" />
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-12 control-label"
+                                    for="subject"
+                                >Subject</label>
+                                <div class="col-12">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="subject"
+                                        required="True"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-12 control-label"
+                                    for="attachment"
+                                >Add Attachments</label>
+                                <div class="col-12">
+                                    <div class="btn btn-default btn-file col-md-12">
+                                        <input
+                                            class="form-control o_website_form_input"
+                                            name="attachment"
+                                            id="attachment"
+                                            type="file"
+                                            multiple="multiple"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-12 control-label"
+                                    for="description"
+                                >Description</label>
+                                <div class="col-12">
+                                    <textarea
+                                        class="form-control"
+                                        name="description"
+                                        style="min-height: 120px"
+                                        required="True"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-3 col-sm-offset-4 col-sm-8 col-md-7">
+                                    <button class="btn btn-primary btn-lg">Submit Ticket</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="s_card card bg-white w-100" data-name="Card">
+                            <h4 class="card-header">Create a new ticket</h4>
+                            <div class="card-body">
+                                <p class="card-text o_default_snippet_text">A card is a flexible and extensible content container. It includes options for headers and footers, a wide variety of content, contextual background colors, and powerful display options.</p><div class="s_rating row" data-name="Rating">
+                            <div class="col-lg-12 s_rating_stars s_rating_3 s_rating_1x pt16 pb16">
+                                <h4 class="o_default_snippet_text">Quality</h4>
+                                <i class="fa fa-1x"></i>
+                                <i class="fa fa-1x"></i>
+                                <i class="fa fa-1x"></i>
+                                <i class="fa fa-1x"></i>
+                                <i class="fa fa-1x"></i>
+                                <div class="s_rating_bar"></div>
+                            </div>
+                        </div><div class="s_alert s_alert_md alert-delta w-100 clearfix" data-name="Alert">
+                            <i class="fa fa-2x fa-info-circle s_alert_icon"></i>
+                            <div class="s_alert_content">
+                                <p class="o_default_snippet_text">Explain the benefits of a great explanation. <br />Don't write about products or services here, write about solutions.</p>
+                            </div>
+                        </div>
+                            </div>
+                            <div class="card-footer">
+                                <i class="fa fa-1x fa-clock-o mr8"></i><small class="o_default_snippet_text">2 hours average response time</small>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label
-                        class="col-md-3 col-dm-4 control-label"
-                        for="description"
-                    >Description</label>
-                    <div class="col-md-7 col-sm-8">
-                        <textarea
-                            class="form-control"
-                            name="description"
-                            style="min-height: 120px"
-                            required="True"
-                        />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-3 col-sm-offset-4 col-sm-8 col-md-7">
-                        <button class="btn btn-primary btn-lg">Submit Ticket</button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </t>
     </template>
 </odoo>
