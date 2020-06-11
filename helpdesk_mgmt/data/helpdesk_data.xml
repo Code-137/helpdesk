@@ -166,7 +166,7 @@
         <record id="helpdesk_ticket_sequence" model="ir.sequence">
             <field name="name">Helpdesk Ticket Sequence</field>
             <field name="code">helpdesk.ticket.sequence</field>
-            <field name="prefix">HT</field>
+            <field name="prefix">#</field>
             <field name="padding">5</field>
             <field name="company_id" />
         </record>
