@@ -1,3 +1,4 @@
+from datetime import datetime
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import AccessError
 
@@ -43,6 +44,8 @@ class HelpdeskTicket(models.Model):
     )
     assigned_date = fields.Datetime(string="Assigned Date")
     closed_date = fields.Datetime(string="Closed Date")
+    time_to_respond = fields.Float(string="Time to Respond", copy=False)
+    time_to_resolve = fields.Float(string="Time to Resolve", copy=False)
     closed = fields.Boolean(related="stage_id.closed")
     unattended = fields.Boolean(related="stage_id.unattended")
     tag_ids = fields.Many2many(comodel_name="helpdesk.ticket.tag", string="Tags")
@@ -147,6 +150,11 @@ class HelpdeskTicket(models.Model):
                 stage = self.env["helpdesk.ticket.stage"].browse([vals["stage_id"]])
                 vals["last_stage_update"] = now
                 if stage.closed:
+                    calendar = _ticket.company_id.resource_calendar_id
+                    hours = calendar.get_work_hours_count(
+                        _ticket.create_date, datetime.now(), compute_leaves=False)
+
+                    vals["time_to_resolve"] = hours
                     vals["closed_date"] = now
             if vals.get("user_id"):
                 vals["assigned_date"] = now
@@ -182,6 +190,15 @@ class HelpdeskTicket(models.Model):
                 },
             )
         return res
+
+    @api.returns('mail.message', lambda value: value.id)
+    def message_post(self, **kwargs):
+        if not self.time_to_respond and kwargs.get('message_type') == 'comment':
+            calendar = self.company_id.resource_calendar_id
+            hours = calendar.get_work_hours_count(self.create_date, datetime.now(), compute_leaves=False)
+
+            self.write({'time_to_respond': hours})
+        return super(HelpdeskTicket, self).message_post(**kwargs)
 
     @api.model
     def message_new(self, msg, custom_values=None):
