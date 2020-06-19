@@ -28,19 +28,21 @@ class HelpdeskTicketController(http.Controller):
 
         return werkzeug.utils.redirect("/my/ticket/" + str(ticket.id))
 
-    @http.route("/new/ticket", type="http", auth="user", website=True)
+    @http.route("/new/ticket", type="http", auth="public", website=True)
     def create_new_ticket(self, **kw):
-        categories = http.request.env["helpdesk.ticket.category"].search(
+        categories = http.request.env["helpdesk.ticket.category"].sudo().search(
             [("active", "=", True)]
         )
-        email = http.request.env.user.email
-        name = http.request.env.user.name
+        email = name = ''
+        if not request.env.user.has_group('base.group_public'):
+            email = http.request.env.user.email
+            name = http.request.env.user.name
         return http.request.render(
             "helpdesk_mgmt.portal_create_ticket",
             {"categories": categories, "email": email, "name": name},
         )
 
-    @http.route("/submitted/ticket", type="http", auth="user", website=True, csrf=True)
+    @http.route("/submitted/ticket", type="http", auth="public", website=True, csrf=True)
     def submit_ticket(self, **kw):
         vals = {
             "partner_name": kw.get("name"),
@@ -73,4 +75,6 @@ class HelpdeskTicketController(http.Controller):
                             "res_id": new_ticket.id,
                         }
                     )
+        if request.env.user.has_group('base.group_public'):
+            return werkzeug.utils.redirect("my/ticket/" + new_ticket.id)
         return werkzeug.utils.redirect("/my/tickets")

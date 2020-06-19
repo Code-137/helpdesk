@@ -239,7 +239,6 @@
                                         name="email"
                                         required="True"
                                         t-attf-value="#{email}"
-                                        readonly="True"
                                     />
                                 </div>
                             </div>
