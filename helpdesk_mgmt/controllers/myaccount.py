@@ -17,16 +17,6 @@ class CustomerPortalHelpdesk(CustomerPortal):
         values["ticket_count"] = ticket_count
         return values
 
-    def _helpdesk_ticket_check_access(self, ticket_id):
-        ticket = request.env["helpdesk.ticket"].browse([ticket_id])
-        ticket_sudo = ticket.sudo()
-        try:
-            ticket.check_access_rights("read")
-            ticket.check_access_rule("read")
-        except AccessError:
-            raise
-        return ticket_sudo
-
     @http.route(
         ["/my/tickets", "/my/tickets/page/<int:page>"],
         type="http",
@@ -100,13 +90,13 @@ class CustomerPortalHelpdesk(CustomerPortal):
         )
         return request.render("helpdesk_mgmt.portal_my_tickets", values)
 
-    @http.route(["/my/ticket/<int:ticket_id>"], type="http", website=True)
-    def portal_my_ticket(self, ticket_id=None, **kw):
-        try:
-            ticket_sudo = self._helpdesk_ticket_check_access(ticket_id)
-        except AccessError:
-            return request.redirect("/my")
-        values = self._ticket_get_page_view_values(ticket_sudo, **kw)
+    @http.route(["/my/ticket/<string:ticket_eid>"], type="http", website=True, auth="public")
+    def portal_my_ticket(self, ticket_eid=None, **kw):
+        ticket = request.env['helpdesk.ticket'].sudo().search(
+            [('unique_eid', '=', ticket_eid)])
+        if not ticket:
+           return request.redirect("/my")
+        values = self._ticket_get_page_view_values(ticket, **kw)
         return request.render("helpdesk_mgmt.portal_helpdesk_ticket_page", values)
 
     def _ticket_get_page_view_values(self, ticket, **kwargs):

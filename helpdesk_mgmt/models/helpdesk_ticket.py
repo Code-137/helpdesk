@@ -1,3 +1,5 @@
+import uuid
+import base64
 from datetime import datetime
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import AccessError
@@ -17,6 +19,13 @@ class HelpdeskTicket(models.Model):
     def _read_group_stage_ids(self, stages, domain, order):
         stage_ids = self.env["helpdesk.ticket.stage"].search([])
         return stage_ids
+
+    def _get_new_eid(self):
+        u = uuid.uuid4()
+        b = base64.b32encode(u.bytes).decode()
+        return b[0:24]
+
+    unique_eid = fields.Char(string="EID", size=32, default=_get_new_eid, readonly=True)
 
     number = fields.Char(string="Ticket number", default="/", readonly=True)
     name = fields.Char(string="Title", required=True)

@@ -10,37 +10,36 @@ _logger = logging.getLogger(__name__)
 
 
 class HelpdeskTicketController(http.Controller):
-    @http.route("/ticket/close", type="http", auth="user")
+    @http.route("/ticket/close", type="http", auth="public")
     def support_ticket_close(self, **kw):
         """Close the support ticket"""
         values = {}
         for field_name, field_value in kw.items():
-            if field_name.endswith("_id"):
-                values[field_name] = int(field_value)
-            else:
-                values[field_name] = field_value
+            values[field_name] = field_value
         ticket = (
             http.request.env["helpdesk.ticket"]
             .sudo()
-            .search([("id", "=", values["ticket_id"])])
+            .search([("unique_eid", "=", values["ticket_eid"])])
         )
-        ticket.stage_id = values.get("stage_id")
+        ticket.stage_id = int(values.get("stage_id"))
 
-        return werkzeug.utils.redirect("/my/ticket/" + str(ticket.id))
+        return werkzeug.utils.redirect("/my/ticket/" + ticket.unique_eid)
 
-    @http.route("/new/ticket", type="http", auth="user", website=True)
+    @http.route("/new/ticket", type="http", auth="public", website=True)
     def create_new_ticket(self, **kw):
-        categories = http.request.env["helpdesk.ticket.category"].search(
+        categories = http.request.env["helpdesk.ticket.category"].sudo().search(
             [("active", "=", True)]
         )
-        email = http.request.env.user.email
-        name = http.request.env.user.name
+        email = name = ''
+        if not request.env.user.has_group('base.group_public'):
+            email = http.request.env.user.email
+            name = http.request.env.user.name
         return http.request.render(
             "helpdesk_mgmt.portal_create_ticket",
             {"categories": categories, "email": email, "name": name},
         )
 
-    @http.route("/submitted/ticket", type="http", auth="user", website=True, csrf=True)
+    @http.route("/submitted/ticket", type="http", auth="public", website=True, csrf=True)
     def submit_ticket(self, **kw):
         vals = {
             "partner_name": kw.get("name"),
@@ -52,11 +51,11 @@ class HelpdeskTicketController(http.Controller):
             "attachment_ids": False,
             "channel_id": request.env["helpdesk.ticket.channel"]
             .sudo()
-            .search([("name", "=", "Web")])
+            .search([("name", "=", "Web")], limit=1)
             .id,
             "partner_id": request.env["res.partner"]
             .sudo()
-            .search([("name", "=", kw.get("name")), ("email", "=", kw.get("email"))])
+            .search([("email", "=", kw.get("email"))], limit=1)
             .id,
         }
         new_ticket = request.env["helpdesk.ticket"].sudo().create(vals)
@@ -73,4 +72,6 @@ class HelpdeskTicketController(http.Controller):
                             "res_id": new_ticket.id,
                         }
                     )
+        if request.env.user.has_group('base.group_public'):
+            return werkzeug.utils.redirect("/my/ticket/" + new_ticket.unique_eid)
         return werkzeug.utils.redirect("/my/tickets")

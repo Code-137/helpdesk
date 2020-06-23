@@ -141,8 +141,8 @@
                                 >
                                     <input
                                         type="hidden"
-                                        name="ticket_id"
-                                        t-attf-value="#{ticket.id}"
+                                        name="ticket_eid"
+                                        t-attf-value="#{ticket.unique_eid}"
                                     />
                                     <input
                                         type="hidden"
@@ -160,30 +160,34 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="mb8">
-                            <div>
-                                <div class="pull-left">
-                                    <strong>Date:</strong>
-                                    <span t-field="ticket.create_date" />
-                                    <br />
-                                    <b>Category:</b>
-                                    <t t-esc="ticket.category_id.name" />
-                                    <br />
-                                    <b>Stage:</b>
-                                    <t t-esc="ticket.stage_id.name" />
-                                    <br />
-                                </div>
-                                <div class="pull-right">
-                                    <strong>Last Stage Update:</strong>
-                                    <span t-field="ticket.last_stage_update" />
-                                    <br />
-                                </div>
+                        <div class="row mb8">
+                            <div class="col-6">
+                                <strong>Nome:</strong>
+                                <span t-field="ticket.partner_name" />
+                                <br />
+                                <strong>Email:</strong>
+                                <span t-field="ticket.partner_email" />
+                                <br />
+                                <strong>Date:</strong>
+                                <span t-field="ticket.create_date" />
+                                <br />
+                                <b>Category:</b>
+                                <t t-esc="ticket.category_id.name" />
+                                <br />
+                                <b>Stage:</b>
+                                <t t-esc="ticket.stage_id.name" />
+                                <br />
                             </div>
-                            <br />
-                            <br />
+                            <div class="col-6">
+                                <strong>Last Stage Update:</strong>
+                                <span t-field="ticket.last_stage_update" />
+                                <br />
+                            </div>
+                        </div>
+                        <div>
                             <h4 class="page-header">Description</h4>
+                            <hr />
                             <t t-raw="ticket.description" />
-                            <br />
                         </div>
                     </div>
                 </div>
@@ -239,7 +243,6 @@
                                         name="email"
                                         required="True"
                                         t-attf-value="#{email}"
-                                        readonly="True"
                                     />
                                 </div>
                             </div>
