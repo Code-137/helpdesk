@@ -43,16 +43,20 @@ class HelpdeskTeam(models.Model):
         readonly=True,
     )
     todo_ticket_count = fields.Integer(
-        string="Number of tickets", compute="_compute_todo_tickets"
+        string="Number of tickets", compute="_compute_todo_tickets",
+        compute_sudo=True,
     )
     todo_ticket_count_unassigned = fields.Integer(
-        string="Number of tickets unassigned", compute="_compute_todo_tickets"
+        string="Number of tickets unassigned",
+        compute="_compute_todo_tickets", compute_sudo=True,
     )
     todo_ticket_count_unattended = fields.Integer(
-        string="Number of tickets unattended", compute="_compute_todo_tickets"
+        string="Number of tickets unattended",
+        compute="_compute_todo_tickets", compute_sudo=True,
     )
     todo_ticket_count_high_priority = fields.Integer(
-        string="Number of tickets in high priority", compute="_compute_todo_tickets"
+        string="Number of tickets in high priority",
+        compute="_compute_todo_tickets", compute_sudo=True,
     )
 
     @api.depends("ticket_ids", "ticket_ids.stage_id")
