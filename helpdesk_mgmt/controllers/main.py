@@ -41,6 +41,7 @@ class HelpdeskTicketController(http.Controller):
 
     @http.route("/submitted/ticket", type="http", auth="public", website=True, csrf=True)
     def submit_ticket(self, **kw):
+        team_id = request.env['helpdesk.ticket.team'].sudo().search([], limit=1)
         vals = {
             "partner_name": kw.get("name"),
             "company_id": http.request.env.user.company_id.id,
@@ -49,6 +50,7 @@ class HelpdeskTicketController(http.Controller):
             "description": kw.get("description"),
             "name": kw.get("subject"),
             "attachment_ids": False,
+            "team_id": team_id.id,
             "channel_id": request.env["helpdesk.ticket.channel"]
             .sudo()
             .search([("name", "=", "Web")], limit=1)
