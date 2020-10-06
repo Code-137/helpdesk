@@ -232,14 +232,13 @@ class HelpdeskTicket(models.Model):
             (msg.get("to") or "") + "," + (msg.get("cc") or "")
         )
         partner_ids = [
-            p
+            p.id
             for p in self.env["mail.thread"]._mail_find_partner_from_emails(
                 email_list, records=ticket, force_create=False
             )
             if p
         ]
         ticket.message_subscribe(partner_ids)
-
         return ticket
 
     def message_update(self, msg, update_vals=None):
@@ -248,7 +247,7 @@ class HelpdeskTicket(models.Model):
             (msg.get("to") or "") + "," + (msg.get("cc") or "")
         )
         partner_ids = [
-            p
+            p.id
             for p in self.env["mail.thread"]._mail_find_partner_from_emails(
                 email_list, records=self, force_create=False
             )
