@@ -104,6 +104,13 @@ class HelpdeskTicket(models.Model):
     def send_user_mail(self):
         self.env.ref("helpdesk_mgmt.assignment_email_template").send_mail(self.id)
 
+    def send_team_mail(self):
+        email_values = {
+            'recipient_ids': [(4, partner.id) for partner in self.team_id.user_ids.mapped("partner_id")],
+            'notification': True,
+        }
+        self.env.ref("helpdesk_mgmt.team_assignment_email_template").send_mail(self.id, email_values=email_values)
+
     def assign_to_me(self):
         self.write({"user_id": self.env.user.id})
 
@@ -139,6 +146,8 @@ class HelpdeskTicket(models.Model):
         # Check if mail to the user has to be sent
         if vals.get("user_id") and res:
             res.send_user_mail()
+        if vals.get("team_id") and res:
+            res.send_team_mail()
         return res
 
     def copy(self, default=None):
@@ -174,6 +183,8 @@ class HelpdeskTicket(models.Model):
         for ticket in self:
             if vals.get("user_id"):
                 ticket.send_user_mail()
+            if vals.get("team_id"):
+                ticket.send_team_mail()
         return res
 
     def action_duplicate_tickets(self):
